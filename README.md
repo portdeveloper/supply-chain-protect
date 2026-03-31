@@ -13,7 +13,7 @@ When you use any package manager, this skill checks if you have **minimum releas
 | **npm** (v11.10+) | Full | `min-release-age=7` in `.npmrc` |
 | **Yarn Berry** (v4.10+) | Full | `npmMinimalAgeGate: 7d` in `.yarnrc.yml` |
 | **pnpm** (v10.16+) | Full | `minimumReleaseAge: 10080` in `pnpm-workspace.yaml` |
-| **Bun** | Full | `minimumReleaseAge = 604800` in `bunfig.toml` |
+| **Bun** (v1.3.0+) | Full | `minimumReleaseAge = 604800` in `bunfig.toml` |
 | **uv** | Full | `exclude-newer = "7 days"` in `uv.toml` |
 | **pip** (v26+) | Partial | `--uploaded-prior-to` CLI flag only |
 | **Cargo** | Guidance | RFC in progress, not yet shipped |

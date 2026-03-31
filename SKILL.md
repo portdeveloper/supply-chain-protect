@@ -71,7 +71,7 @@ npmPreapprovedPackages:
 
 Check `pnpm-workspace.yaml` for `minimumReleaseAge` (value is in **minutes**, 10080 = 7 days).
 
-**Important:** Creating `pnpm-workspace.yaml` just for this setting (without a `packages` field) is supported but requires **pnpm v10.32.1+** to avoid a bug where all directories were treated as workspace projects. On older versions, add a `packages: ["."]` field explicitly.
+**Important:** Creating `pnpm-workspace.yaml` just for this setting (without a `packages` field) works on most versions, but **pnpm v10.31.0–v10.32.0** had a bug where all directories were treated as workspace projects (fixed in v10.32.1). On those versions, add a `packages: ["."]` field explicitly to be safe.
 
 Config:
 
@@ -87,9 +87,11 @@ minimumReleaseAgeExclude:
   - "@myorg/*"
 ```
 
-#### Bun
+#### Bun (v1.3.0+)
 
-Check `bunfig.toml` (project-level) or `$XDG_CONFIG_HOME/.bunfig.toml` / `~/.bunfig.toml` (global) for `minimumReleaseAge` (value is in **seconds**, 604800 = 7 days):
+Check `bunfig.toml` (project-level) or `$XDG_CONFIG_HOME/.bunfig.toml` / `~/.bunfig.toml` (global) for `minimumReleaseAge` (value is in **seconds**, 604800 = 7 days).
+
+**Warning:** Bun versions before 1.3.0 **silently ignore** this setting — no error, no protection. Verify the version with `bun --version`.
 
 ```toml
 [install]
