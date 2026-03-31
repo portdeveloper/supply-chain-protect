@@ -9,9 +9,98 @@ Protect against supply chain attacks by ensuring package managers are configured
 
 ## How it triggers
 
-**Claude Code**: A `PreToolUse` hook (`.claude/hooks/check-supply-chain.sh`) automatically fires before any package manager command (`npm install`, `bun add`, `yarn add`, `pnpm add`, `uv add`, `pip install`, etc.). If protection is missing, it injects context telling you to check this skill and offer to configure it.
-
 **Other agents** (Cursor, Copilot, Codex, etc.): Activate this skill whenever the user runs or asks you to run any package install/add/update command, creates dependency files, or sets up a new project.
+
+**Claude Code**: This skill works best with a `PreToolUse` hook that automatically fires before any package manager command. **The first time this skill is activated, check if the hook is installed. If not, offer to set it up:**
+
+1. Check if `.claude/hooks/check-supply-chain.sh` exists in the project directory
+2. If it doesn't exist, tell the user:
+   > "I can install a hook that will automatically check supply chain protection every time a package is installed. Want me to set it up?"
+3. If the user agrees, create these two files:
+
+**`.claude/hooks/check-supply-chain.sh`** (make executable with `chmod +x`):
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+INPUT=$(cat)
+COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
+[ -z "$COMMAND" ] && exit 0
+
+CWD=$(echo "$INPUT" | jq -r '.cwd // empty')
+[ -z "$CWD" ] && CWD="."
+
+MANAGER=""
+case "$COMMAND" in
+  npm\ install*|npm\ i\ *|npm\ add*|npm\ update*|npm\ ci*) MANAGER="npm" ;;
+  npx\ *) MANAGER="npm" ;;
+  yarn\ add*|yarn\ install*) MANAGER="yarn" ;;
+  pnpm\ add*|pnpm\ install*|pnpm\ i\ *|pnpm\ update*) MANAGER="pnpm" ;;
+  bun\ add*|bun\ install*|bun\ i\ *|bun\ update*) MANAGER="bun" ;;
+  bunx\ *) MANAGER="bun" ;;
+  uv\ add*|uv\ pip\ install*|uv\ sync*|uv\ lock*) MANAGER="uv" ;;
+  pip\ install*|pip3\ install*) MANAGER="pip" ;;
+  *) exit 0 ;;
+esac
+
+check_npm() {
+  grep -q "min-release-age" "$CWD/.npmrc" 2>/dev/null || grep -q "min-release-age" "$HOME/.npmrc" 2>/dev/null
+}
+check_yarn() { grep -q "npmMinimalAgeGate" "$CWD/.yarnrc.yml" 2>/dev/null; }
+check_pnpm() { grep -q "minimumReleaseAge" "$CWD/pnpm-workspace.yaml" 2>/dev/null; }
+check_bun() {
+  grep -q "minimumReleaseAge" "$CWD/bunfig.toml" 2>/dev/null || grep -q "minimumReleaseAge" "${XDG_CONFIG_HOME:-$HOME}/.bunfig.toml" 2>/dev/null
+}
+check_uv() {
+  grep -q "exclude-newer" "$CWD/pyproject.toml" 2>/dev/null || grep -q "exclude-newer" "$CWD/uv.toml" 2>/dev/null || grep -q "exclude-newer" "${XDG_CONFIG_HOME:-$HOME/.config}/uv/uv.toml" 2>/dev/null
+}
+
+PROTECTED=false
+case "$MANAGER" in
+  npm) check_npm && PROTECTED=true ;; yarn) check_yarn && PROTECTED=true ;;
+  pnpm) check_pnpm && PROTECTED=true ;; bun) check_bun && PROTECTED=true ;;
+  uv) check_uv && PROTECTED=true ;; pip) PROTECTED=false ;;
+esac
+
+[ "$PROTECTED" = "true" ] && exit 0
+
+if [ "$MANAGER" = "pip" ]; then
+  MSG="Supply chain protection: pip has no persistent min-release-age config. Recommend switching to uv which supports exclude-newer. See the supply-chain-protect skill for details."
+else
+  MSG="Supply chain protection is NOT configured for $MANAGER. Before proceeding, check the supply-chain-protect skill and offer to set up the minimum release age config. Do not skip this."
+fi
+
+jq -n --arg msg "$MSG" '{
+  hookSpecificOutput: {
+    hookEventName: "PreToolUse",
+    permissionDecision: "allow",
+    additionalContext: $msg
+  }
+}'
+```
+
+**`.claude/settings.json`** (merge with existing if present):
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/check-supply-chain.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Once installed, the hook fires automatically before every package install command — no manual prompting needed.
 
 ## What to do
 
