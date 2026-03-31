@@ -13,24 +13,26 @@ Activate this skill whenever the user:
 
 - Runs or asks you to run any package install/add/update command (e.g. `npm install`, `yarn add`, `pnpm add`, `bun add`, `bun install`, `uv add`, `uv pip install`, `pip install`, `cargo add`, `go get`, `composer require`, `bundle add`)
 - Creates or modifies dependency files (`package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `composer.json`, `Gemfile`)
-- Sets up a new project with `npm init`, `uv init`, `cargo init`, etc.
+- Sets up a new project with `npm init`, `bun init`, `uv init`, `cargo init`, etc.
 
 ## What to do
 
 ### Step 1: Detect which package managers are in use
 
-Check the project directory for:
+Check the project directory for lockfiles and config files. **Lockfiles take priority** — a `package.json` alone is ambiguous since npm, Yarn, pnpm, and Bun all use it. Detect in this order:
 
-- `package.json` or `package-lock.json` → npm
-- `.yarnrc.yml` or `yarn.lock` → Yarn Berry
-- `pnpm-lock.yaml` or `pnpm-workspace.yaml` → pnpm
-- `bunfig.toml` or `bun.lock` → Bun
-- `pyproject.toml` or `uv.lock` → uv
-- `requirements.txt` or `setup.py` → pip
-- `Cargo.toml` → Cargo (Rust)
-- `go.mod` → Go
-- `composer.json` → Composer (PHP)
-- `Gemfile` → Bundler (Ruby)
+1. `bun.lock` or `bunfig.toml` → **Bun**
+2. `yarn.lock` or `.yarnrc.yml` → **Yarn Berry**
+3. `pnpm-lock.yaml` or `pnpm-workspace.yaml` → **pnpm**
+4. `package-lock.json` or (`package.json` with no other JS lockfile) → **npm**
+5. `uv.lock` or (`pyproject.toml` with `[tool.uv]`) → **uv**
+6. `requirements.txt` or `setup.py` (without uv indicators) → **pip**
+7. `Cargo.toml` → **Cargo** (Rust)
+8. `go.mod` → **Go**
+9. `composer.json` → **Composer** (PHP)
+10. `Gemfile` → **Bundler** (Ruby)
+
+A project can use multiple package managers (e.g. npm for JS + uv for Python). Check all that apply.
 
 ### Step 2: Check existing protections
 
