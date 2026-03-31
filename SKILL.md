@@ -54,6 +54,14 @@ Check `.yarnrc.yml` for `npmMinimalAgeGate` (value is in **minutes**, 10080 = 7 
 npmMinimalAgeGate: 10080
 ```
 
+To exempt specific packages:
+
+```yaml
+npmMinimalAgeGate: 10080
+npmPreapprovedPackages:
+  - "@myorg/*"
+```
+
 #### pnpm (v10.16+)
 
 Check `pnpm-workspace.yaml` for `minimumReleaseAge` (value is in **minutes**, 10080 = 7 days):
@@ -62,7 +70,13 @@ Check `pnpm-workspace.yaml` for `minimumReleaseAge` (value is in **minutes**, 10
 minimumReleaseAge: 10080
 ```
 
-Or `.npmrc` for `minimum-release-age=10080`.
+pnpm also supports excluding specific packages:
+
+```yaml
+minimumReleaseAge: 10080
+minimumReleaseAgeExclude:
+  - "@myorg/*"
+```
 
 #### Bun
 
@@ -102,7 +116,7 @@ pip supports `--uploaded-prior-to` as a CLI flag only, with **absolute timestamp
 
 #### Cargo, Go, Composer, Bundler — not yet supported
 
-These package managers do **not** have native release age gating as of March 2026. If detected:
+These package managers do **not** have native release age gating yet. If detected:
 
 - **Cargo**: Mention RFC rust-lang/rfcs#3923 is in progress but not shipped. Suggest pinning exact versions and auditing with `cargo-audit`.
 - **Go**: No equivalent exists. Suggest pinning with `go.sum` and using a module proxy.
@@ -142,4 +156,4 @@ When the user confirms, write the config files:
 - Never silently modify configs. Always show what will change and ask for confirmation.
 - If a package manager version is too old to support the feature, tell the user which version they need.
 - For monorepos, check both root and workspace-level configs.
-- The `min-release-age` setting will cause installs to fail if a dependency was published less than 7 days ago. Warn the user this may block bleeding-edge packages and that they can exempt specific packages if needed.
+- These settings will cause installs to fail if a dependency was published less than 7 days ago. Warn the user this may block bleeding-edge packages and that they can exempt specific packages if needed (Yarn: `npmPreapprovedPackages`, pnpm: `minimumReleaseAgeExclude`, Bun: `minimumReleaseAgeExcludes`).
