@@ -21,7 +21,7 @@ Activate this skill whenever the user:
 
 Check the project directory for lockfiles and config files. **Lockfiles take priority** — a `package.json` alone is ambiguous since npm, Yarn, pnpm, and Bun all use it. Detect in this order:
 
-1. `bun.lock` or `bunfig.toml` → **Bun**
+1. `bun.lock` or `bun.lockb` or `bunfig.toml` → **Bun**
 2. `yarn.lock` or `.yarnrc.yml` → **Yarn Berry**
 3. `pnpm-lock.yaml` or `pnpm-workspace.yaml` → **pnpm**
 4. `package-lock.json` or (`package.json` with no other JS lockfile) → **npm**
@@ -32,7 +32,7 @@ Check the project directory for lockfiles and config files. **Lockfiles take pri
 9. `composer.json` → **Composer** (PHP)
 10. `Gemfile` → **Bundler** (Ruby)
 
-A project can use multiple package managers (e.g. npm for JS + uv for Python). Check all that apply.
+A project should only match **one** JS package manager (items 1–4), but can use managers from different ecosystems simultaneously (e.g. npm for JS + uv for Python). Check all ecosystems that apply.
 
 ### Step 2: Check existing protections
 
@@ -46,9 +46,11 @@ Check `~/.npmrc` and project `.npmrc` for `min-release-age`:
 min-release-age=7
 ```
 
+npm does not support per-package exemptions. To bypass for a specific install, use `--before` with an absolute date instead.
+
 #### Yarn Berry (v4.10+)
 
-Check `.yarnrc.yml` for `npmMinimalAgeGate` (accepts a **duration string** — e.g. `"7d"` for 7 days, default is `"3d"`):
+Check `.yarnrc.yml` for `npmMinimalAgeGate` (accepts a **duration string** — e.g. `7d` for 7 days):
 
 ```yaml
 npmMinimalAgeGate: 7d
@@ -80,7 +82,7 @@ minimumReleaseAgeExclude:
 
 #### Bun
 
-Check `bunfig.toml` (project-level) or `~/.bunfig.toml` / `$XDG_CONFIG_HOME/.bunfig.toml` (global) for `minimumReleaseAge` (value is in **seconds**, 604800 = 7 days):
+Check `bunfig.toml` (project-level) or `$XDG_CONFIG_HOME/.bunfig.toml` / `~/.bunfig.toml` (global) for `minimumReleaseAge` (value is in **seconds**, 604800 = 7 days):
 
 ```toml
 [install]
@@ -133,7 +135,7 @@ Supply Chain Protection Status
 npm     ✅ min-release-age=7 (in ~/.npmrc)
 bun     ✅ minimumReleaseAge=604800 (in bunfig.toml)
 uv      ❌ exclude-newer not set
-pnpm    ⚠️  not supported (v10.15 < v10.16 required)
+pnpm    ⚠️  requires v10.16+, found v10.15
 ```
 
 For any missing protections on supported package managers, ask the user:
