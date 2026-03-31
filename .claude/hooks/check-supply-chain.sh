@@ -79,12 +79,21 @@ if [ "$PROTECTED" = "true" ]; then
   exit 0
 fi
 
-# Protection is missing — inject context
-if [ "$MANAGER" = "pip" ]; then
-  MSG="Supply chain protection: pip has no persistent min-release-age config. Recommend switching to uv which supports exclude-newer. See the supply-chain-protect skill for details."
-else
-  MSG="Supply chain protection is NOT configured for $MANAGER. Before proceeding, check the supply-chain-protect skill and offer to set up the minimum release age config. Do not skip this."
-fi
+# Protection is missing — inject context with inline fix
+case "$MANAGER" in
+  npm)
+    MSG="Supply chain protection is NOT configured for npm. Before proceeding, offer to add min-release-age=7 to the project .npmrc file (or ~/.npmrc for global). This rejects packages published less than 7 days ago." ;;
+  yarn)
+    MSG="Supply chain protection is NOT configured for Yarn. Before proceeding, offer to add npmMinimalAgeGate: 7d to .yarnrc.yml. This rejects packages published less than 7 days ago." ;;
+  pnpm)
+    MSG="Supply chain protection is NOT configured for pnpm. Before proceeding, offer to add minimumReleaseAge: 10080 to pnpm-workspace.yaml (value is in minutes, 10080 = 7 days). This rejects packages published less than 7 days ago." ;;
+  bun)
+    MSG="Supply chain protection is NOT configured for Bun. Before proceeding, offer to create/update bunfig.toml with [install] section containing minimumReleaseAge = 604800 (value is in seconds, 604800 = 7 days). This rejects packages published less than 7 days ago. Requires Bun v1.3.0+." ;;
+  uv)
+    MSG="Supply chain protection is NOT configured for uv. Before proceeding, offer to add exclude-newer = \"7 days\" under [tool.uv] in pyproject.toml (or in ~/.config/uv/uv.toml for global). This rejects packages published less than 7 days ago." ;;
+  pip)
+    MSG="Supply chain protection: pip has no persistent min-release-age config. Recommend switching to uv which supports exclude-newer = \"7 days\" in pyproject.toml." ;;
+esac
 
 jq -n --arg msg "$MSG" '{
   hookSpecificOutput: {
