@@ -1,12 +1,12 @@
 # Tweet 1
 
+the axios attack used a dependency that had been on npm for minutes. a 7-day minimum release age would've stopped it.
+
 paste this into your AI agent:
 
 "Read https://portdeveloper.github.io/supply-chain-protect/SKILL.md and protect my project"
 
-it detects which package managers you use, checks if you have a minimum release age configured, and sets it up if not.
-
-the axios attack used a dependency that had been on npm for minutes. this makes sure you never install something that fresh.
+it detects which package managers you use, checks if you have min-release-age configured, and sets it up if not.
 
 # Tweet 2 (reply)
 
