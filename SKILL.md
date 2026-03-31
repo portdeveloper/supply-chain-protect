@@ -1,6 +1,6 @@
 ---
 name: supply-chain-protect
-description: Proactively checks and configures package manager supply chain protections (min release age / exclude newer) whenever dependencies are installed, added, or updated. Triggers on npm, yarn, pnpm, bun, uv, pip, cargo, go, composer, bundler usage.
+description: Proactively checks and configures package manager supply chain protections (min release age / exclude newer) whenever dependencies are installed, added, or updated. Triggers on npm, yarn, pnpm, bun, uv, pip, cargo, go, composer, bundler, deno usage.
 ---
 
 # Supply Chain Protection
@@ -11,7 +11,7 @@ Protect against supply chain attacks by ensuring package managers are configured
 
 Activate this skill whenever the user:
 
-- Runs or asks you to run any package install/add/update command (e.g. `npm install`, `yarn add`, `pnpm add`, `bun add`, `bun install`, `uv add`, `uv pip install`, `pip install`, `cargo add`, `go get`, `composer require`, `bundle add`)
+- Runs or asks you to run any package install/add/update command (e.g. `npm install`, `npm update`, `npm ci`, `yarn add`, `yarn install`, `pnpm add`, `pnpm install`, `bun add`, `bun install`, `uv add`, `uv sync`, `uv pip install`, `pip install`, `cargo add`, `go get`, `composer require`, `bundle add`, `deno add`)
 - Creates or modifies dependency files (`package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `composer.json`, `Gemfile`)
 - Sets up a new project with `npm init`, `bun init`, `uv init`, `cargo init`, etc.
 
@@ -31,6 +31,7 @@ Check the project directory for lockfiles and config files. **Lockfiles take pri
 8. `go.mod` → **Go**
 9. `composer.json` → **Composer** (PHP)
 10. `Gemfile` → **Bundler** (Ruby)
+11. `deno.json` or `deno.lock` → **Deno**
 
 A project should only match **one** JS package manager (items 1–4), but can use managers from different ecosystems simultaneously (e.g. npm for JS + uv for Python). Check all ecosystems that apply.
 
@@ -46,7 +47,9 @@ Check `~/.npmrc` and project `.npmrc` for `min-release-age`:
 min-release-age=7
 ```
 
-npm does not support per-package exemptions. To bypass for a specific install, use `--before` with an absolute date instead.
+npm does not support per-package exemptions. `min-release-age` and `--before` are **mutually exclusive** — they cannot be used together. To temporarily bypass the age gate, the user must remove `min-release-age` from `.npmrc` or run with `--min-release-age=0`.
+
+Note: `npx` does **not** respect `min-release-age` — only `npm install` does. One-off package executions via `npx` are unprotected.
 
 #### Yarn Berry (v4.10+)
 
@@ -66,7 +69,11 @@ npmPreapprovedPackages:
 
 #### pnpm (v10.16+)
 
-Check `pnpm-workspace.yaml` for `minimumReleaseAge` (value is in **minutes**, 10080 = 7 days):
+Check `pnpm-workspace.yaml` for `minimumReleaseAge` (value is in **minutes**, 10080 = 7 days).
+
+**Important:** Creating `pnpm-workspace.yaml` just for this setting (without a `packages` field) is supported but requires **pnpm v10.32.1+** to avoid a bug where all directories were treated as workspace projects. On older versions, add a `packages: ["."]` field explicitly.
+
+Config:
 
 ```yaml
 minimumReleaseAge: 10080
@@ -112,11 +119,13 @@ exclude-newer = "7 days"
 exclude-newer = "7 days"
 ```
 
+**Caveat:** Relative durations like `"7 days"` are resolved from the current time. In a **global** config (`~/.config/uv/uv.toml`) this is fine — it always means "7 days ago from now." But in a **project** config (`pyproject.toml`) committed to version control, prefer an **absolute RFC 3339 timestamp** instead (e.g. `"2026-03-24T00:00:00Z"`) so that all team members resolve the same versions when running `uv lock`. With relative durations in a shared config, two developers running `uv lock` on different days will produce different lockfiles.
+
 #### pip (v26+) — partial support
 
 pip supports `--uploaded-prior-to` as a CLI flag only, with **absolute timestamps** (not relative durations). There is no persistent config equivalent. Mention this limitation and recommend uv instead for Python projects.
 
-#### Cargo, Go, Composer, Bundler — not yet supported
+#### Cargo, Go, Composer, Bundler, Deno — not yet supported
 
 These package managers do **not** have native release age gating yet. If detected:
 
@@ -124,6 +133,7 @@ These package managers do **not** have native release age gating yet. If detecte
 - **Go**: No equivalent exists. Suggest pinning with `go.sum` and using a module proxy.
 - **Composer**: No equivalent exists. Issues have been filed (composer/composer#12552).
 - **Bundler**: No native support. Mention gem.coop as a community alternative that enforces 48-hour cooldowns at the registry level.
+- **Deno**: No equivalent exists. Deno relies on lockfiles (`deno.lock`) for integrity checking but has no publish-date filtering.
 
 ### Step 3: Report and offer to fix
 
@@ -151,6 +161,12 @@ When the user confirms, write the config files:
 - For **global** configs (`~/.npmrc`, `~/.bunfig.toml`, `~/.config/uv/uv.toml`): append the setting if not already present, preserving existing content
 - For **project** configs (`.yarnrc.yml`, `pnpm-workspace.yaml`, `bunfig.toml`, `pyproject.toml`): add the setting to the appropriate section
 - Always show the user what was written and where
+
+## Trigger behavior
+
+- **First time in a project**: Run the full check (Steps 1–4) and report the status table.
+- **Subsequent triggers**: If you've already checked this project in the current session and all protections were configured, don't repeat the full check. Only re-check if the user is setting up a new project or adding a new package manager.
+- **Unsupported managers only**: If the only detected managers are unsupported (Cargo, Go, etc.), mention it briefly once. Don't repeatedly warn about something the user can't fix.
 
 ## Important notes
 

@@ -20,6 +20,7 @@ When you use any package manager, this skill checks if you have **minimum releas
 | **Go** | Guidance | No native support |
 | **Composer** | Guidance | No native support |
 | **Bundler** | Guidance | No native support (gem.coop workaround) |
+| **Deno** | Guidance | No native support |
 
 ## Install
 
