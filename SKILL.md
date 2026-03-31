@@ -1,6 +1,6 @@
 ---
 name: supply-chain-protect
-description: Proactively checks and configures package manager supply chain protections (min release age / exclude newer) whenever dependencies are installed, added, or updated. Triggers on npm, yarn, pnpm, uv, pip, cargo, go, composer, bundler usage.
+description: Proactively checks and configures package manager supply chain protections (min release age / exclude newer) whenever dependencies are installed, added, or updated. Triggers on npm, yarn, pnpm, bun, uv, pip, cargo, go, composer, bundler usage.
 ---
 
 # Supply Chain Protection
@@ -11,7 +11,7 @@ Protect against supply chain attacks by ensuring package managers are configured
 
 Activate this skill whenever the user:
 
-- Runs or asks you to run any package install/add/update command (e.g. `npm install`, `yarn add`, `pnpm add`, `uv add`, `uv pip install`, `pip install`, `cargo add`, `go get`, `composer require`, `bundle add`)
+- Runs or asks you to run any package install/add/update command (e.g. `npm install`, `yarn add`, `pnpm add`, `bun add`, `bun install`, `uv add`, `uv pip install`, `pip install`, `cargo add`, `go get`, `composer require`, `bundle add`)
 - Creates or modifies dependency files (`package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `composer.json`, `Gemfile`)
 - Sets up a new project with `npm init`, `uv init`, `cargo init`, etc.
 
@@ -24,6 +24,7 @@ Check the project directory for:
 - `package.json` or `package-lock.json` → npm
 - `.yarnrc.yml` or `yarn.lock` → Yarn Berry
 - `pnpm-lock.yaml` or `pnpm-workspace.yaml` → pnpm
+- `bunfig.toml` or `bun.lock` → Bun
 - `pyproject.toml` or `uv.lock` → uv
 - `requirements.txt` or `setup.py` → pip
 - `Cargo.toml` → Cargo (Rust)
@@ -61,6 +62,23 @@ minimumReleaseAge: 10080
 
 Or `.npmrc` for `minimum-release-age=10080`.
 
+#### Bun
+
+Check `bunfig.toml` (project-level) or `~/.bunfig.toml` / `$XDG_CONFIG_HOME/.bunfig.toml` (global) for `minimumReleaseAge` (value is in **seconds**, 604800 = 7 days):
+
+```toml
+[install]
+minimumReleaseAge = 604800
+```
+
+Bun also supports excluding trusted packages from the age gate:
+
+```toml
+[install]
+minimumReleaseAge = 604800
+minimumReleaseAgeExcludes = ["@types/node", "typescript"]
+```
+
 #### uv
 
 Check `~/.config/uv/uv.toml` (global) or `pyproject.toml` under `[tool.uv]` for `exclude-newer`:
@@ -97,6 +115,7 @@ Print a status table like:
 Supply Chain Protection Status
 ==============================
 npm     ✅ min-release-age=7 (in ~/.npmrc)
+bun     ✅ minimumReleaseAge=604800 (in bunfig.toml)
 uv      ❌ exclude-newer not set
 pnpm    ⚠️  not supported (v10.15 < v10.16 required)
 ```
@@ -111,8 +130,8 @@ Then apply the appropriate config.
 
 When the user confirms, write the config files:
 
-- For **global** configs (`~/.npmrc`, `~/.config/uv/uv.toml`): append the setting if not already present, preserving existing content
-- For **project** configs (`.yarnrc.yml`, `pnpm-workspace.yaml`, `pyproject.toml`): add the setting to the appropriate section
+- For **global** configs (`~/.npmrc`, `~/.bunfig.toml`, `~/.config/uv/uv.toml`): append the setting if not already present, preserving existing content
+- For **project** configs (`.yarnrc.yml`, `pnpm-workspace.yaml`, `bunfig.toml`, `pyproject.toml`): add the setting to the appropriate section
 - Always show the user what was written and where
 
 ## Important notes
