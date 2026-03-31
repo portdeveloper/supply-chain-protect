@@ -1,14 +1,14 @@
 # Tweet draft
 
-made an AI agent skill that protects you from supply chain attacks
+the axios hack worked because a malicious dependency was published to npm minutes before being pulled into the package. a 7-day minimum release age would have stopped it cold.
 
-every time you install a package, it checks if your package manager has a minimum release age configured — and offers to set it up if not
+i built an AI agent skill that checks this for you. every time you install a package, it looks at whether your package manager has min-release-age configured — and offers to set it up if not.
 
-works with npm, yarn, pnpm, bun, and uv
+works with npm, yarn, pnpm, bun, and uv.
 
 npx skills add portdeveloper/supply-chain-protect
 
-tested every config against the real package managers. bun < 1.3.0 silently ignores the setting btw — no error, no protection
+i tested every config against the actual package managers. fun fact: bun < 1.3.0 silently ignores the setting — no error, no protection.
 
 ---
 
