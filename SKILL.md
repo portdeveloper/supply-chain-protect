@@ -7,13 +7,11 @@ description: Proactively checks and configures package manager supply chain prot
 
 Protect against supply chain attacks by ensuring package managers are configured to reject freshly-published packages. New packages should "cool down" for at least 7 days before being installable — this gives the community time to detect compromised or malicious releases.
 
-## When to trigger
+## How it triggers
 
-Activate this skill whenever the user:
+**Claude Code**: A `PreToolUse` hook (`.claude/hooks/check-supply-chain.sh`) automatically fires before any package manager command (`npm install`, `bun add`, `yarn add`, `pnpm add`, `uv add`, `pip install`, etc.). If protection is missing, it injects context telling you to check this skill and offer to configure it.
 
-- Runs or asks you to run any package install/add/update command (e.g. `npm install`, `npm update`, `npm ci`, `yarn add`, `yarn install`, `pnpm add`, `pnpm install`, `bun add`, `bun install`, `uv add`, `uv sync`, `uv pip install`, `pip install`, `cargo add`, `go get`, `composer require`, `bundle add`, `deno add`)
-- Creates or modifies dependency files (`package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `composer.json`, `Gemfile`)
-- Sets up a new project with `npm init`, `bun init`, `uv init`, `cargo init`, etc.
+**Other agents** (Cursor, Copilot, Codex, etc.): Activate this skill whenever the user runs or asks you to run any package install/add/update command, creates dependency files, or sets up a new project.
 
 ## What to do
 

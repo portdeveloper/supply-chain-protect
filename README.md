@@ -11,18 +11,16 @@ npx skills add portdeveloper/supply-chain-protect
 ## How it works
 
 ```
-  you type                        the skill
-  "bun add zod"        ──>     checks bunfig.toml
-                                     │
-                               is minimumReleaseAge set?
-                              /                        \
-                            yes                         no
-                             │                           │
-                        installs                    asks you:
-                        normally              "want me to add it?"
-                                                     │
-                                               writes config
-                                               shows diff
+  you type              hook fires              the agent
+  "bun add zod"  ──>  checks bunfig.toml  ──>  is minimumReleaseAge set?
+                                               /                        \
+                                             yes                         no
+                                              │                           │
+                                         installs                    asks you:
+                                         normally              "want me to add it?"
+                                                                      │
+                                                                writes config
+                                                                shows diff
 ```
 
 When the skill triggers, it prints a status report:
@@ -64,11 +62,21 @@ Every config in this skill was tested against real package managers:
 
 ## Install
 
+### Claude Code (automatic trigger)
+
 ```bash
 npx skills add portdeveloper/supply-chain-protect
 ```
 
-Works with Claude Code, Cursor, Codex, GitHub Copilot, Gemini CLI, and [40+ other agents](https://skills.sh).
+Includes a `PreToolUse` hook that automatically fires before any package install command. If protection is missing, the agent is told to check and offer to configure it — no manual prompting needed.
+
+### Other agents (Cursor, Copilot, Codex, etc.)
+
+```bash
+npx skills add portdeveloper/supply-chain-protect
+```
+
+Installs the skill with a soft trigger. The agent activates it based on the skill description when it sees package manager activity. Works with [40+ agents](https://skills.sh).
 
 ## License
 
