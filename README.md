@@ -68,7 +68,7 @@ Every config in this skill was tested against real package managers:
 npx skills add portdeveloper/supply-chain-protect
 ```
 
-Includes a `PreToolUse` hook that automatically fires before any package install command. If protection is missing, the agent is told to check and offer to configure it — no manual prompting needed.
+Includes a global `PreToolUse` hook (`~/.claude/hooks/`) that automatically fires before any package install command in every project. If protection is missing, the agent is told to check and offer to configure it — no manual prompting needed.
 
 ### Other agents (Cursor, Copilot, Codex, etc.)
 

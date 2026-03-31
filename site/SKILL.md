@@ -11,14 +11,14 @@ Protect against supply chain attacks by ensuring package managers are configured
 
 **Other agents** (Cursor, Copilot, Codex, etc.): Activate this skill whenever the user runs or asks you to run any package install/add/update command, creates dependency files, or sets up a new project.
 
-**Claude Code**: This skill works best with a `PreToolUse` hook that automatically fires before any package manager command. **The first time this skill is activated, check if the hook is installed. If not, offer to set it up:**
+**Claude Code**: This skill works best with a global `PreToolUse` hook that automatically fires before any package manager command in **every project**. **The first time this skill is activated, check if the hook is installed. If not, offer to set it up:**
 
-1. Check if `.claude/hooks/check-supply-chain.sh` exists in the project directory
+1. Check if `~/.claude/hooks/check-supply-chain.sh` exists
 2. If it doesn't exist, tell the user:
-   > "I can install a hook that will automatically check supply chain protection every time a package is installed. Want me to set it up?"
+   > "I can install a global hook that will automatically check supply chain protection every time a package is installed — in any project. Want me to set it up?"
 3. If the user agrees, create these two files:
 
-**`.claude/hooks/check-supply-chain.sh`** (make executable with `chmod +x`):
+**`~/.claude/hooks/check-supply-chain.sh`** (make executable with `chmod +x`):
 
 ```bash
 #!/usr/bin/env bash
@@ -80,7 +80,7 @@ jq -n --arg msg "$MSG" '{
 }'
 ```
 
-**`.claude/settings.json`** (merge with existing if present):
+**`~/.claude/settings.json`** (merge the `hooks` field into the existing file — do NOT overwrite other settings):
 
 ```json
 {
@@ -91,7 +91,7 @@ jq -n --arg msg "$MSG" '{
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/check-supply-chain.sh\""
+            "command": "bash ~/.claude/hooks/check-supply-chain.sh"
           }
         ]
       }
@@ -100,7 +100,7 @@ jq -n --arg msg "$MSG" '{
 }
 ```
 
-Once installed, the hook fires automatically before every package install command — no manual prompting needed.
+Once installed, the hook fires globally — every project, every package install command, automatically.
 
 ## What to do
 
