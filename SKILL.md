@@ -47,9 +47,9 @@ Check `~/.npmrc` and project `.npmrc` for `min-release-age`:
 min-release-age=7
 ```
 
-npm does not support per-package exemptions. `min-release-age` and `--before` are **mutually exclusive** — they cannot be used together. To temporarily bypass the age gate, the user must remove `min-release-age` from `.npmrc` or run with `--min-release-age=0`.
+npm does not support per-package exemptions. `min-release-age` and `--before` are **mutually exclusive** — they cannot be used together. To temporarily bypass the age gate, run with `--min-release-age=0`.
 
-Note: `npx` does **not** respect `min-release-age` — only `npm install` does. One-off package executions via `npx` are unprotected.
+`npx` **does** respect `min-release-age` from `.npmrc` — the underlying resolver (arborist) reads the config globally.
 
 #### Yarn Berry (v4.10+)
 
