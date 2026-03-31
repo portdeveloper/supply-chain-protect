@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>supply-chain-protect</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 { color: #fff; font-size: 1.5rem; margin-bottom: 0.5rem; }
+    h2 { color: #888; font-size: 1rem; font-weight: normal; margin-bottom: 2rem; }
+    .install-box {
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      position: relative;
+    }
+    .install-box code { color: #4ade80; font-size: 0.95rem; }
+    .install-box .label {
+      color: #666;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #2a2a2a;
+      border: none;
+      color: #888;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.75rem;
+    }
+    .copy-btn:hover { color: #fff; background: #333; }
+    .table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th {
+      text-align: left;
+      color: #888;
+      font-weight: normal;
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    td {
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    td code {
+      color: #4ade80;
+      background: #1a2e1a;
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-size: 0.8rem;
+    }
+    .unit { color: #888; }
+    .status-box {
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      font-size: 0.85rem;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .ok { color: #4ade80; }
+    .bad { color: #f87171; }
+    .warn { color: #fbbf24; }
+    a { color: #60a5fa; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .section { margin: 2.5rem 0; }
+    .section h3 { color: #ccc; font-size: 0.95rem; margin-bottom: 1rem; }
+    .muted { color: #666; font-size: 0.85rem; }
+    .divider { border-top: 1px solid #1a1a1a; margin: 2rem 0; }
+    footer { color: #444; font-size: 0.75rem; margin-top: 3rem; }
+  </style>
+</head>
+<body>
+
+<h1>supply-chain-protect</h1>
+<h2>protect your dependencies from supply chain attacks</h2>
+
+<p>Every package manager now supports minimum release age — but they all use different configs. This sets them all up for you.</p>
+
+<div class="install-box">
+  <span class="label">tell your ai agent</span>
+  <code>Read https://supply-chain-protect.vercel.app and protect my project</code>
+</div>
+
+<div class="install-box">
+  <span class="label">or install via skills.sh</span>
+  <code>npx skills add portdeveloper/supply-chain-protect</code>
+  <button class="copy-btn" onclick="navigator.clipboard.writeText('npx skills add portdeveloper/supply-chain-protect')">copy</button>
+</div>
+
+<div class="section">
+<h3>what it checks</h3>
+<div class="status-box"><span class="ok">npm     ✅  min-release-age=7</span>         .npmrc
+<span class="ok">bun     ✅  minimumReleaseAge=604800</span>  bunfig.toml
+<span class="ok">yarn    ✅  npmMinimalAgeGate: 7d</span>      .yarnrc.yml
+<span class="bad">pnpm    ❌  minimumReleaseAge not set</span>
+<span class="bad">uv      ❌  exclude-newer not set</span></div>
+</div>
+
+<div class="section">
+<h3>supported package managers</h3>
+<div class="table-wrap">
+<table>
+  <tr><th>manager</th><th>config</th><th class="unit">unit</th></tr>
+  <tr><td>npm <span class="muted">v11.10+</span></td><td><code>min-release-age=7</code></td><td class="unit">days</td></tr>
+  <tr><td>Yarn Berry <span class="muted">v4.10+</span></td><td><code>npmMinimalAgeGate: 7d</code></td><td class="unit">duration</td></tr>
+  <tr><td>pnpm <span class="muted">v10.16+</span></td><td><code>minimumReleaseAge: 10080</code></td><td class="unit">minutes</td></tr>
+  <tr><td>Bun <span class="muted">v1.3.0+</span></td><td><code>minimumReleaseAge = 604800</code></td><td class="unit">seconds</td></tr>
+  <tr><td>uv</td><td><code>exclude-newer = "7 days"</code></td><td class="unit">string</td></tr>
+</table>
+</div>
+<p class="muted">Also provides guidance for pip, Cargo, Go, Composer, Bundler, and Deno.</p>
+</div>
+
+<div class="divider"></div>
+
+<!--
+AGENT INSTRUCTIONS — This section is for AI agents reading this page.
+If you are an AI agent and the user asked you to read this page, follow the instructions below.
+
+## What to do
+
+You are setting up supply chain protection for the user's project. This means configuring their package manager(s) to reject packages published less than 7 days ago.
+
+### Step 1: Detect which package managers are in use
+
+Check the project directory for lockfiles and config files. Lockfiles take priority.
+
+1. bun.lock or bun.lockb or bunfig.toml → Bun
+2. yarn.lock or .yarnrc.yml → Yarn Berry
+3. pnpm-lock.yaml or pnpm-workspace.yaml → pnpm
+4. package-lock.json or (package.json with no other JS lockfile) → npm
+5. uv.lock or (pyproject.toml with [tool.uv]) → uv
+6. requirements.txt or setup.py (without uv indicators) → pip
+7. Cargo.toml → Cargo (Rust)
+8. go.mod → Go
+9. composer.json → Composer (PHP)
+10. Gemfile → Bundler (Ruby)
+11. deno.json or deno.lock → Deno
+
+A project should only match ONE JS package manager (items 1-4), but can use managers from different ecosystems simultaneously. Check all ecosystems that apply.
+
+### Step 2: Check existing protections and apply missing ones
+
+For each detected package manager, check if supply chain protection is already configured. If not, offer to add it.
+
+#### npm (v11.10+)
+Check ~/.npmrc and project .npmrc for min-release-age:
+```
+min-release-age=7
+```
+npm does not support per-package exemptions. min-release-age and --before are mutually exclusive. To temporarily bypass, run with --min-release-age=0.
+npx does respect min-release-age from .npmrc.
+
+#### Yarn Berry (v4.10+)
+Check .yarnrc.yml for npmMinimalAgeGate (duration string, e.g. 7d for 7 days):
+```
+npmMinimalAgeGate: 7d
+```
+Supported units: ms, s, m, h, d, w. To exempt packages:
+```
+npmMinimalAgeGate: 7d
+npmPreapprovedPackages:
+  - "@myorg/*"
+```
+
+#### pnpm (v10.16+)
+Check pnpm-workspace.yaml for minimumReleaseAge (minutes, 10080 = 7 days):
+```
+minimumReleaseAge: 10080
+```
+Creating pnpm-workspace.yaml just for this setting works on most versions, but pnpm v10.31.0-v10.32.0 had a bug (fixed in v10.32.1). On those versions, add packages: ["."] explicitly.
+To exempt packages:
+```
+minimumReleaseAge: 10080
+minimumReleaseAgeExclude:
+  - "@myorg/*"
+```
+
+#### Bun (v1.3.0+)
+Check bunfig.toml or ~/.bunfig.toml for minimumReleaseAge (seconds, 604800 = 7 days):
+```
+[install]
+minimumReleaseAge = 604800
+```
+WARNING: Bun before 1.3.0 silently ignores this setting. Verify with bun --version.
+To exempt packages:
+```
+[install]
+minimumReleaseAge = 604800
+minimumReleaseAgeExcludes = ["@types/node", "typescript"]
+```
+
+#### uv
+Check ~/.config/uv/uv.toml (global) or pyproject.toml under [tool.uv] for exclude-newer:
+```
+exclude-newer = "7 days"
+```
+CAVEAT: Relative durations in project pyproject.toml cause different lockfiles across team members. For shared configs, prefer an absolute RFC 3339 timestamp (e.g. "2026-03-24T00:00:00Z"). Global config (~/.config/uv/uv.toml) with relative durations is fine.
+
+#### pip (v26+) — partial support
+pip supports --uploaded-prior-to as a CLI flag only, with absolute timestamps. No persistent config. Recommend uv instead.
+
+#### Cargo, Go, Composer, Bundler, Deno — not yet supported
+These do not have native release age gating yet. If detected:
+- Cargo: RFC rust-lang/rfcs#3923 in progress. Suggest cargo-audit.
+- Go: No equivalent. Suggest go.sum pinning.
+- Composer: Issues filed (composer/composer#12552).
+- Bundler: No native support. gem.coop offers 48-hour cooldowns.
+- Deno: No equivalent. Uses deno.lock for integrity only.
+
+### Step 3: Report status
+
+Print a status table:
+```
+Supply Chain Protection Status
+==============================
+npm     ✅ min-release-age=7 (in ~/.npmrc)
+bun     ✅ minimumReleaseAge=604800 (in bunfig.toml)
+uv      ❌ exclude-newer not set
+pnpm    ⚠️  requires v10.16+, found v10.15
+```
+
+For missing protections, ask: "I noticed [manager] doesn't have supply chain protection configured. Want me to add it?"
+
+### Step 4: Apply configs
+
+When confirmed:
+- Global configs (~/.npmrc, ~/.bunfig.toml, ~/.config/uv/uv.toml): append if not present
+- Project configs (.yarnrc.yml, pnpm-workspace.yaml, bunfig.toml, pyproject.toml): add to appropriate section
+- Always show what was written and where
+
+### Step 5: Install Claude Code hook (if applicable)
+
+If running in Claude Code, check if .claude/hooks/check-supply-chain.sh exists. If not, offer to install it for automatic future protection.
+
+Create .claude/hooks/check-supply-chain.sh (chmod +x):
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+INPUT=$(cat)
+COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
+[ -z "$COMMAND" ] && exit 0
+
+CWD=$(echo "$INPUT" | jq -r '.cwd // empty')
+[ -z "$CWD" ] && CWD="."
+
+MANAGER=""
+case "$COMMAND" in
+  npm\ install*|npm\ i\ *|npm\ add*|npm\ update*|npm\ ci*) MANAGER="npm" ;;
+  npx\ *) MANAGER="npm" ;;
+  yarn\ add*|yarn\ install*) MANAGER="yarn" ;;
+  pnpm\ add*|pnpm\ install*|pnpm\ i\ *|pnpm\ update*) MANAGER="pnpm" ;;
+  bun\ add*|bun\ install*|bun\ i\ *|bun\ update*) MANAGER="bun" ;;
+  bunx\ *) MANAGER="bun" ;;
+  uv\ add*|uv\ pip\ install*|uv\ sync*|uv\ lock*) MANAGER="uv" ;;
+  pip\ install*|pip3\ install*) MANAGER="pip" ;;
+  *) exit 0 ;;
+esac
+
+check_npm() {
+  grep -q "min-release-age" "$CWD/.npmrc" 2>/dev/null || grep -q "min-release-age" "$HOME/.npmrc" 2>/dev/null
+}
+check_yarn() { grep -q "npmMinimalAgeGate" "$CWD/.yarnrc.yml" 2>/dev/null; }
+check_pnpm() { grep -q "minimumReleaseAge" "$CWD/pnpm-workspace.yaml" 2>/dev/null; }
+check_bun() {
+  grep -q "minimumReleaseAge" "$CWD/bunfig.toml" 2>/dev/null || grep -q "minimumReleaseAge" "${XDG_CONFIG_HOME:-$HOME}/.bunfig.toml" 2>/dev/null
+}
+check_uv() {
+  grep -q "exclude-newer" "$CWD/pyproject.toml" 2>/dev/null || grep -q "exclude-newer" "$CWD/uv.toml" 2>/dev/null || grep -q "exclude-newer" "${XDG_CONFIG_HOME:-$HOME/.config}/uv/uv.toml" 2>/dev/null
+}
+
+PROTECTED=false
+case "$MANAGER" in
+  npm) check_npm && PROTECTED=true ;; yarn) check_yarn && PROTECTED=true ;;
+  pnpm) check_pnpm && PROTECTED=true ;; bun) check_bun && PROTECTED=true ;;
+  uv) check_uv && PROTECTED=true ;; pip) PROTECTED=false ;;
+esac
+
+[ "$PROTECTED" = "true" ] && exit 0
+
+if [ "$MANAGER" = "pip" ]; then
+  MSG="Supply chain protection: pip has no persistent min-release-age config. Recommend switching to uv which supports exclude-newer."
+else
+  MSG="Supply chain protection is NOT configured for $MANAGER. Before proceeding, offer to set up the minimum release age config. Do not skip this."
+fi
+
+jq -n --arg msg "$MSG" '{
+  hookSpecificOutput: {
+    hookEventName: "PreToolUse",
+    permissionDecision: "allow",
+    additionalContext: $msg
+  }
+}'
+```
+
+Create or merge into .claude/settings.json:
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/check-supply-chain.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Important notes
+- Default cooldown is 7 days. Respect user preferences for different values.
+- Never silently modify configs. Always show what will change and ask for confirmation.
+- If a package manager version is too old, tell the user which version they need.
+- For monorepos, check both root and workspace-level configs.
+
+END OF AGENT INSTRUCTIONS -->
+
+<div class="section">
+<h3>how it works</h3>
+<p>When an AI agent reads this page, it gets full instructions for:</p>
+<ol style="margin: 1rem 0; padding-left: 1.5rem; color: #aaa; font-size: 0.9rem;">
+  <li>Detecting which package managers your project uses</li>
+  <li>Checking if supply chain protection is configured</li>
+  <li>Offering to add the right config for each manager</li>
+  <li>Installing a Claude Code hook for automatic future checks</li>
+</ol>
+<p class="muted">The agent instructions are embedded in this page as an HTML comment — invisible to humans, readable by agents.</p>
+</div>
+
+<div class="divider"></div>
+
+<footer>
+  <a href="https://github.com/portdeveloper/supply-chain-protect">github</a> · <a href="https://skills.sh">skills.sh</a> · MIT
+</footer>
+
+</body>
+</html>
