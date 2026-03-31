@@ -48,16 +48,16 @@ min-release-age=7
 
 #### Yarn Berry (v4.10+)
 
-Check `.yarnrc.yml` for `npmMinimalAgeGate` (value is in **minutes**, 10080 = 7 days):
+Check `.yarnrc.yml` for `npmMinimalAgeGate` (accepts a **duration string** — e.g. `"7d"` for 7 days, default is `"3d"`):
 
 ```yaml
-npmMinimalAgeGate: 10080
+npmMinimalAgeGate: 7d
 ```
 
-To exempt specific packages:
+Supported units: `ms`, `s`, `m`, `h`, `d`, `w`. To exempt specific packages:
 
 ```yaml
-npmMinimalAgeGate: 10080
+npmMinimalAgeGate: 7d
 npmPreapprovedPackages:
   - "@myorg/*"
 ```
